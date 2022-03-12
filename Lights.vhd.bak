@@ -1,0 +1,196 @@
+library IEEE;
+	use IEEE.STD_LOGIC_1164.all;
+
+entity Lights is
+    port (Clk, Reset, rt, lt,int: in STD_LOGIC;
+          l0,l1,l2,l3,l4,l5,l6,l7,l8,l9: out STD_LOGIC);
+end Lights;
+
+entity clk200Hz is
+    Port (
+        entrada: in  STD_LOGIC;
+        reset  : in  STD_LOGIC;
+        salida : out STD_LOGIC
+    );
+end clk200Hz;
+
+architecture A1 of FSM is
+
+type State is (S0, S1, S2, S3);			-- Declaración de tipo de dato State con 
+
+signal CurrentState, NextState: State;	-- Señales de tipo State
+
+signal temporal: STD_LOGIC;
+    signal contador: integer range 0 to 99999999 := 0;
+    
+begin
+    divisor_frecuencia: process (reset, entrada) begin
+        if (reset = '1') then
+            temporal <= '0';
+            contador <= 0;
+            CurrentState <= S0;
+        elsif rising_edge(entrada) then
+            if (contador = 99999999) then
+                temporal <= NOT(temporal);
+                contador <= 0;
+                CurrentState <= NextState;
+            else
+                contador <= contador+1;
+            end if;
+        end if;
+end process;
+     
+    salida <= temporal;
+    
+	Combinational: process (CurrentState, rt,lt,int) -- Lógica combinacional de la FSM
+	begin
+		NextState <= CurrentState;
+		l0<= '0';
+        l1<= '0';
+        l2<= '0';
+        l3<= '0';
+        l4<= '0';
+        l5<= '0';
+        l6<= '0';
+        l7<= '0';
+        l8<= '0';
+        l9<= '0';
+		
+        case CurrentState is
+        
+		when S0 =>						-- Estado S0
+        		l0<= '0';
+        		l1<= '0';
+       			l2<= '0';
+        		l3<= '0';
+        		l4<= '0';
+        		l5<= '0';
+        		l6<= '0';
+        		l7<= '0';
+       			l8<= '0';
+        		l9<= '0';
+            
+				if int then
+					NextState <= S1;		
+            	else
+            		if rt then
+                		NextState <= S2;
+                	else
+                		NextState <= S3;
+				end if;
+            
+		when S1 =>						-- Estado S1
+			if int then
+				NextState <= S1;		
+            else
+            	if rt then
+                	NextState <= S2;
+                elsif lt then
+               		NextState <= S3;
+                else
+                	NextState <= S0;
+			end if;
+            
+		when S2 =>						-- Estado S2
+			if int then
+				NextState <= S1;		
+            else
+            	if rt then
+                	NextState <= S2;
+                elsif lt then
+                	NextState <= S3;
+                else
+                	NextState <= S0;
+			end if;
+            
+		when S3 =>						-- Estado S3
+			if int then
+				NextState <= S1;		
+            else	
+            	if rt then
+                	NextState <= S2;
+                elsif lt then
+                	NExtState <= S3;
+                else:
+                	NextState <= S0;
+                   
+			end if;
+            
+		when others =>							
+			NextState <= S0;
+		end case;
+        
+	end process Combinational;
+    
+    inter: process(S1) 
+    begin
+    	l4 <= '1';
+    	while l4 loop
+        	l4 <= '1';
+        	l5 <= '1';
+            l0 <= '0';
+        	l1 <= '0';
+        	l2 <= '0';
+        	l3 <= '0';
+        	l6 <= '0';
+        	l7 <= '0';
+        	l8 <= '0';
+        	l9 <= '0';
+            
+            wait 500 NS;
+            l5 <= '1';
+            l4 <= '1';
+            l0 <= '0';
+        	l1 <= '0';
+        	l2 <= '0';
+        	l3 <= '1';
+        	l6 <= '1';
+        	l7 <= '0';
+        	l8 <= '0';
+        	l9 <= '0';
+            
+            wait 500 NS;
+            l5 <= '1';
+            l0 <= '0';
+        	l1 <= '0';
+        	l2 <= '1';
+        	l3 <= '1';
+        	l6 <= '1';
+        	l7 <= '1';
+        	l8 <= '0';
+        	l9 <= '0';
+            
+            wait 500 NS;
+            l5 <= '1';
+            l0 <= '0';
+        	l1 <= '1';
+        	l2 <= '1';
+        	l3 <= '1';
+        	l6 <= '1';
+        	l7 <= '1';
+        	l8 <= '1';
+        	l9 <= '0';
+            
+            wait 500 NS;
+            l5 <= '1';
+            l0 <= '1';
+        	l1 <= '1';
+        	l2 <= '1';
+        	l3 <= '1';
+        	l6 <= '1';
+        	l7 <= '1';
+        	l8 <= '1';
+        	l9 <= '1';       
+    end process;
+    
+    
+    der : process(S2)
+    end process;
+    
+    izq : process(S3)
+    end process;
+    
+    ret : process(S0)
+    end process;
+    
+end architecture A1;
